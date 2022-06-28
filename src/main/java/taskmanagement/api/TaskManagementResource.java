@@ -5,6 +5,7 @@ import taskmanagement.service.Task;
 import taskmanagement.service.TaskManagementService;
 import taskmanagement.service.TaskUpdate;
 
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -26,6 +27,7 @@ public class TaskManagementResource {
 
     private final TaskManagementService service;
 
+    @Inject
     public TaskManagementResource(TaskManagementService service) {
         this.service = service;
     }

@@ -3,12 +3,14 @@ package taskmanagement.service;
 
 import taskmanagement.exceptions.TaskNotFoundException;
 
+import javax.inject.Inject;
 import java.util.List;
 
 public class TaskManagementService {
 
     private final TaskManagementRepository repository;
 
+    @Inject
     public TaskManagementService(TaskManagementRepository repository) {
         this.repository = repository;
     }
