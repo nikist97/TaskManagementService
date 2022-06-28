@@ -18,6 +18,8 @@ public class ApplicationConfig extends ResourceConfig {
     public ApplicationConfig(ServiceLocator serviceLocator) {
         register(TaskManagementResource.class);
         register(JsonObjectMapperProvider.class);
+        register(InvalidTaskDataExceptionMapper.class);
+        register(TaskNotFoundExceptionMapper.class);
 
         // bridge the Guice container (Injector) into the HK2 container (ServiceLocator)
         Injector injector = Guice.createInjector(new ApplicationModule());
