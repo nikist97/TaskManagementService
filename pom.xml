@@ -60,11 +60,39 @@
             <artifactId>guice-bridge</artifactId>
             <version>2.6.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>9.0.62</version>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <!--     This is where we will declare plugins our project needs for the build process     -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>appassembler-maven-plugin</artifactId>
+                <version>2.0.0</version>
+                <configuration>
+                    <assembleDirectory>target</assembleDirectory>
+                    <extraJvmArguments>--add-opens java.base/java.lang=ALL-UNNAMED</extraJvmArguments>
+                    <programs>
+                        <program>
+                            <mainClass>taskmanagement.Launcher</mainClass>
+                            <name>taskmanagement_webapp</name>
+                        </program>
+                    </programs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>assemble</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
