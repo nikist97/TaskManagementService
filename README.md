@@ -5,8 +5,8 @@ The **master** branch contains the latest version of the project combining all t
 * https://blog.teonisoftware.com/integrating-a-java-rest-api-with-a-database
 
 If you are interested in the code for a particular blog post check the corresponding tag:
-1. https://blog.teonisoftware.com/step-by-step-tutorial-for-building-a-rest-api-in-java - **in-memory-db-repository-v0.2**
-2. https://blog.teonisoftware.com/integrating-a-java-rest-api-with-a-database - **mongodb-repository-v0.1**
+1. https://blog.teonisoftware.com/step-by-step-tutorial-for-building-a-rest-api-in-java - [**in-memory-db-repository-v0.2**](https://github.com/nikist97/TaskManagementService/tree/in-memory-db-repository-v0.2)
+2. https://blog.teonisoftware.com/integrating-a-java-rest-api-with-a-database - [**mongodb-repository-v0.1**](https://github.com/nikist97/TaskManagementService/tree/mongodb-repository-v0.1)
 
 Copyright 2022 Nikolay Stanchev
 
