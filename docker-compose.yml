@@ -2,12 +2,12 @@ version: "3.9"
 services:
   mongo:
     image: "mongo:5.0.9"
-    container_name: taskmanagementservice_mongodb
+    container_name: taskmanagementservice-mongodb
     volumes:
       - .data/mongo:/data/db
   prometheus:
     image: "prom/prometheus:v2.40.7"
-    container_name: taskmanagementservice_prometheus
+    container_name: taskmanagementservice-prometheus
     volumes:
       - .data/prometheus:/prometheus
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
@@ -15,10 +15,10 @@ services:
       - "9090:9090"
   webapp:
     build: .
-    container_name: taskmanagementservice_api
+    container_name: taskmanagementservice-api
     depends_on:
       - "mongo"
     environment:
-      - MongoDB_URI=mongodb://taskmanagementservice_mongodb:27017
+      - MongoDB_URI=mongodb://taskmanagementservice-mongodb:27017
     ports:
       - "8080:8080"

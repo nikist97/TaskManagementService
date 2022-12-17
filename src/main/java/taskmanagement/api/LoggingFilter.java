@@ -3,6 +3,7 @@ package taskmanagement.api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseContext;
@@ -11,6 +12,7 @@ import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.ext.Provider;
 import java.time.Instant;
 
+@Priority(2)
 @Provider
 @PreMatching
 public class LoggingFilter implements ContainerRequestFilter, ContainerResponseFilter {
@@ -28,6 +30,8 @@ public class LoggingFilter implements ContainerRequestFilter, ContainerResponseF
         long processingStartTime = (long) requestContext.getProperty("requestProcessingStartTime");
         long processingEndTime = Instant.now().toEpochMilli();
         long processingLatency = processingEndTime - processingStartTime;
+
+        requestContext.setProperty("requestProcessingTime", processingLatency);
 
         LOGGER.info("{} {} {} {}ms",
                 requestContext.getMethod(),
