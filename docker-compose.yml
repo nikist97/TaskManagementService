@@ -5,6 +5,14 @@ services:
     container_name: taskmanagementservice_mongodb
     volumes:
       - .data/mongo:/data/db
+  prometheus:
+    image: "prom/prometheus:v2.40.7"
+    container_name: taskmanagementservice_prometheus
+    volumes:
+      - .data/prometheus:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
   webapp:
     build: .
     container_name: taskmanagementservice_api
