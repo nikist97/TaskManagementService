@@ -1,12 +1,15 @@
 package taskmanagement.service;
 
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import taskmanagement.exceptions.TaskNotFoundException;
 
 import javax.inject.Inject;
 import java.util.List;
 
 public class TaskManagementService {
+
+    private static final Logger LOGGER = LogManager.getLogger(TaskManagementService.class);
 
     private final TaskManagementRepository repository;
 
@@ -19,6 +22,8 @@ public class TaskManagementService {
         Task task = Task.builder(title, description).build();
 
         repository.save(task);
+
+        LOGGER.info("Successfully created new task {}", task);
 
         return task;
     }

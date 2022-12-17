@@ -70,6 +70,17 @@ public class Task {
     }
 
     @Override
+    public String toString() {
+        return "Task{" +
+                "identifier='" + identifier + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", createdAt=" + createdAt +
+                ", completed=" + completed +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
 
         if (this == o) return true;
