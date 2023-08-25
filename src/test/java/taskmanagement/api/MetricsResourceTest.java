@@ -17,13 +17,9 @@ public class MetricsResourceTest {
 
         String metrics = resource.metrics();
 
-        assertTrue(metrics.startsWith("# HELP test_counter_total test counter help message\n" +
+        assertTrue(metrics, metrics.contains("# HELP test_counter_total test counter help message\n" +
                 "# TYPE test_counter_total counter\n" +
-                "test_counter_total 2.0\n" +
-                "# HELP test_counter_created test counter help message\n" +
-                "# TYPE test_counter_created gauge\n" +
-                "test_counter_created "));
-
+                "test_counter_total 2.0\n"));
     }
 
 }

@@ -9,6 +9,7 @@ public class TaskResponse {
     private final String identifier;
     private final String title;
     private final String description;
+    private final String createdBy;
     private final String createdAt;
     private final boolean completed;
 
@@ -16,6 +17,7 @@ public class TaskResponse {
         this.identifier = task.getIdentifier();
         this.title = task.getTitle();
         this.description = task.getDescription();
+        this.createdBy = task.getCreatedBy();
         this.createdAt = task.getCreatedAt().toString();
         this.completed = task.isCompleted();
     }
@@ -30,6 +32,10 @@ public class TaskResponse {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
     }
 
     public String getCreatedAt() {
@@ -52,11 +58,12 @@ public class TaskResponse {
                 && Objects.equals(identifier, that.identifier)
                 && Objects.equals(title, that.title)
                 && Objects.equals(description, that.description)
+                && Objects.equals(createdBy, that.createdBy)
                 && Objects.equals(createdAt, that.createdAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(identifier, title, description, createdAt, completed);
+        return Objects.hash(identifier, title, description, createdAt, createdBy, completed);
     }
 }

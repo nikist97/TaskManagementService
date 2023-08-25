@@ -36,7 +36,7 @@ public class MongoDBTaskManagementRepositoryTest {
         MongoDBTaskManagementRepository repository = new MongoDBTaskManagementRepository(collection);
 
         Instant now = Instant.parse("2022-07-27T19:09:04.120Z");
-        Task task = Task.builder("test-title", "test-description")
+        Task task = Task.builder("test-title", "test-description", "test-user-id")
                 .withCreatedAt(now)
                 .withCompleted(true)
                 .build();
@@ -49,6 +49,7 @@ public class MongoDBTaskManagementRepositoryTest {
         mongoDBTask.setIdentifier(task.getIdentifier());
         mongoDBTask.setTitle(task.getTitle());
         mongoDBTask.setDescription(task.getDescription());
+        mongoDBTask.setCreatedBy(task.getCreatedBy());
 
         ArgumentCaptor<ReplaceOptions> replaceOptionsArgumentCaptor = ArgumentCaptor.forClass(ReplaceOptions.class);
 
@@ -61,7 +62,7 @@ public class MongoDBTaskManagementRepositoryTest {
     @Test
     public void testGetAll() {
         Instant now = Instant.parse("2022-07-27T19:09:04.120Z");
-        Task task = Task.builder("test-title", "test-description")
+        Task task = Task.builder("test-title", "test-description", "test-user-id")
                 .withCreatedAt(now)
                 .withCompleted(true)
                 .build();
@@ -72,6 +73,7 @@ public class MongoDBTaskManagementRepositoryTest {
         mongoDBTask.setIdentifier(task.getIdentifier());
         mongoDBTask.setTitle(task.getTitle());
         mongoDBTask.setDescription(task.getDescription());
+        mongoDBTask.setCreatedBy(task.getCreatedBy());
 
         MongoCollection<MongoDBTaskManagementRepository.MongoDBTask> collection = mock(MongoCollection.class);
         MongoDBTaskManagementRepository repository = new MongoDBTaskManagementRepository(collection);
@@ -99,7 +101,7 @@ public class MongoDBTaskManagementRepositoryTest {
 
         Instant now = Instant.parse("2022-07-27T19:09:04.120Z");
 
-        Task expectedTask = Task.builder("test-title", "test-description")
+        Task expectedTask = Task.builder("test-title", "test-description", "test-user-id")
                 .withCreatedAt(now)
                 .withCompleted(true)
                 .build();
@@ -110,6 +112,7 @@ public class MongoDBTaskManagementRepositoryTest {
         mongoDBTask.setIdentifier(expectedTask.getIdentifier());
         mongoDBTask.setTitle(expectedTask.getTitle());
         mongoDBTask.setDescription(expectedTask.getDescription());
+        mongoDBTask.setCreatedBy(expectedTask.getCreatedBy());
 
         FindIterable<MongoDBTaskManagementRepository.MongoDBTask> findIterable = mock(FindIterable.class);
         when(findIterable.first()).thenReturn(mongoDBTask);

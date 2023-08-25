@@ -3,18 +3,24 @@ package taskmanagement.api;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import taskmanagement.exceptions.InvalidDataException;
 import taskmanagement.service.Task;
 import taskmanagement.service.TaskManagementService;
 import taskmanagement.service.TaskUpdate;
+import taskmanagement.service.User;
 
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Response;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -23,7 +29,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class TaskManagementResourceTest {
+
+    @Mock
+    ContainerRequestContext containerRequestContext;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -35,21 +45,25 @@ public class TaskManagementResourceTest {
 
         String title = "test-title";
         String description = "test-description";
+        User user = new User("test-user");
         String taskID = "test-task-id";
         TaskCreateRequest createRequest = new TaskCreateRequest(title, description);
 
-        when(service.create(anyString(), anyString())).thenReturn(
-                Task.builder(title, description)
+        when(service.create(anyString(), anyString(), any(User.class))).thenReturn(
+                Task.builder(title, description, user.getUserID())
                         .withIdentifier(taskID)
                         .build());
 
-        Response response = resource.createTask(createRequest);
+        when(containerRequestContext.getProperty(anyString())).thenReturn(user);
+
+        Response response = resource.createTask(createRequest, containerRequestContext);
 
         assertEquals(201, response.getStatus());
         assertEquals("tasks/" + taskID, response.getLocation().getRawPath());
 
-        verify(service, times(1)).create(title, description);
-        verifyNoMoreInteractions(service);
+        verify(containerRequestContext).getProperty("user");
+        verify(service).create(title, description, user);
+        verifyNoMoreInteractions(service, containerRequestContext);
     }
 
     @Test
@@ -59,11 +73,11 @@ public class TaskManagementResourceTest {
 
         thrown.expect(InvalidDataException.class);
         thrown.expectMessage("task-create-request-body cannot be null");
-
+        
         try {
-            resource.createTask(null);
+            resource.createTask(null, containerRequestContext);
         } finally {
-            verifyNoMoreInteractions(service);
+            verifyNoMoreInteractions(service, containerRequestContext);
         }
     }
 
@@ -72,8 +86,8 @@ public class TaskManagementResourceTest {
         TaskManagementService service = mock(TaskManagementService.class);
         TaskManagementResource resource = new TaskManagementResource(service);
 
-        Task task = Task.builder("test-title", "test-description").build();
-        Task anotherTask = Task.builder("another-test-title", "another-test-description").build();
+        Task task = Task.builder("test-title", "test-description", "test-user-id").build();
+        Task anotherTask = Task.builder("another-test-title", "another-test-description", "another-test-user-id").build();
         List<Task> tasks = new ArrayList<>();
         tasks.add(task);
         tasks.add(anotherTask);
@@ -136,7 +150,7 @@ public class TaskManagementResourceTest {
         TaskManagementService service = mock(TaskManagementService.class);
         TaskManagementResource resource = new TaskManagementResource(service);
 
-        Task task = Task.builder("test-title", "test-description").build();
+        Task task = Task.builder("test-title", "test-description", "test-user").build();
         when(service.retrieve(task.getIdentifier())).thenReturn(task);
 
         TaskResponse expectedTaskResponse = new TaskResponse(task);

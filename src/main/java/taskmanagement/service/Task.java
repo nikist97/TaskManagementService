@@ -13,6 +13,7 @@ public class Task {
     private final String identifier;
     private final String title;
     private final String description;
+    private final String createdBy;
     private final Instant createdAt;
     private final boolean completed;
 
@@ -20,6 +21,7 @@ public class Task {
         this.identifier = builder.identifier;
         this.title = builder.title;
         this.description = builder.description;
+        this.createdBy = builder.createdBy;
         this.createdAt = builder.createdAt;
         this.completed = builder.completed;
     }
@@ -36,6 +38,10 @@ public class Task {
         return description;
     }
 
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
     }
@@ -45,28 +51,28 @@ public class Task {
     }
 
     public Task update(TaskUpdate update) {
-        TaskBuilder newTaskBuilder = new TaskBuilder(title, description)
+        TaskBuilder newTaskBuilder = new TaskBuilder(title, description, createdBy)
                 .withIdentifier(identifier)
                 .withCreatedAt(createdAt)
                 .withCompleted(completed);
 
         if (update.getTitle() != null) {
-            newTaskBuilder.withTitle(update.getTitle());
+            newTaskBuilder = newTaskBuilder.withTitle(update.getTitle());
         }
 
         if (update.getDescription() != null) {
-            newTaskBuilder.withDescription(update.getDescription());
+            newTaskBuilder = newTaskBuilder.withDescription(update.getDescription());
         }
 
         if (update.getCompleted() != null) {
-            newTaskBuilder.withCompleted(update.getCompleted());
+            newTaskBuilder = newTaskBuilder.withCompleted(update.getCompleted());
         }
 
         return newTaskBuilder.build();
     }
 
-    public static TaskBuilder builder(String title, String description) {
-        return new TaskBuilder(title, description);
+    public static TaskBuilder builder(String title, String description, String createdBy) {
+        return new TaskBuilder(title, description, createdBy);
     }
 
     @Override
@@ -75,6 +81,7 @@ public class Task {
                 "identifier='" + identifier + '\'' +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
+                ", createdBy='" + createdBy + '\'' +
                 ", createdAt=" + createdAt +
                 ", completed=" + completed +
                 '}';
@@ -93,15 +100,17 @@ public class Task {
                 && identifier.equals(task.identifier)
                 && title.equals(task.title)
                 && description.equals(task.description)
+                && createdBy.equals(task.createdBy)
                 && createdAt.equals(task.createdAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(identifier, title, description, createdAt, completed);
+        return Objects.hash(identifier, title, description, createdBy, createdAt, completed);
     }
 
     public static class TaskBuilder {
+        private final String createdBy;
         private String title;
         private String description;
 
@@ -109,12 +118,14 @@ public class Task {
         private Instant createdAt;
         private boolean completed;
 
-        private TaskBuilder(String title, String description) {
+        private TaskBuilder(String title, String description, String createdBy) {
             validateArgNotNullOrBlank(title, "title");
             validateArgNotNullOrBlank(description, "description");
+            validateArgNotNullOrBlank(createdBy, "createdBy");
 
             this.title = title;
             this.description = description;
+            this.createdBy = createdBy;
             this.identifier = UUID.randomUUID().toString();
             this.createdAt = Instant.now();
             this.completed = false;

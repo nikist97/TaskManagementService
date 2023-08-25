@@ -4,6 +4,7 @@ package taskmanagement.api;
 import taskmanagement.service.Task;
 import taskmanagement.service.TaskManagementService;
 import taskmanagement.service.TaskUpdate;
+import taskmanagement.service.User;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -14,6 +15,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
@@ -34,10 +37,11 @@ public class TaskManagementResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createTask(TaskCreateRequest taskCreateRequest) {
+    public Response createTask(TaskCreateRequest taskCreateRequest, @Context ContainerRequestContext requestContext) {
         validateArgNotNull(taskCreateRequest, "task-create-request-body");
 
-        Task task = service.create(taskCreateRequest.getTitle(), taskCreateRequest.getDescription());
+        User user = (User) requestContext.getProperty("user");
+        Task task = service.create(taskCreateRequest.getTitle(), taskCreateRequest.getDescription(), user);
 
         String taskID = task.getIdentifier();
 

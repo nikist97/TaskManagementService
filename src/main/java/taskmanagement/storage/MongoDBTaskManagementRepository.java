@@ -61,7 +61,7 @@ public class MongoDBTaskManagementRepository implements TaskManagementRepository
     }
 
     private Task fromMongoDBTask(MongoDBTask mongoDBTask) {
-        return Task.builder(mongoDBTask.getTitle(), mongoDBTask.getDescription())
+        return Task.builder(mongoDBTask.getTitle(), mongoDBTask.getDescription(), mongoDBTask.getCreatedBy())
                 .withIdentifier(mongoDBTask.getIdentifier())
                 .withCompleted(mongoDBTask.isCompleted())
                 .withCreatedAt(Instant.ofEpochMilli(mongoDBTask.getCreatedAt()))
@@ -73,6 +73,7 @@ public class MongoDBTaskManagementRepository implements TaskManagementRepository
         mongoDBTask.setIdentifier(task.getIdentifier());
         mongoDBTask.setTitle(task.getTitle());
         mongoDBTask.setDescription(task.getDescription());
+        mongoDBTask.setCreatedBy(task.getCreatedBy());
         mongoDBTask.setCreatedAt(task.getCreatedAt().toEpochMilli());
         mongoDBTask.setCompleted(task.isCompleted());
 
@@ -86,6 +87,9 @@ public class MongoDBTaskManagementRepository implements TaskManagementRepository
         private String title;
 
         private String description;
+
+        @BsonProperty("created_by")
+        private String createdBy;
 
         @BsonProperty("created_at")
         private long createdAt;
@@ -116,6 +120,14 @@ public class MongoDBTaskManagementRepository implements TaskManagementRepository
             this.description = description;
         }
 
+        public String getCreatedBy() {
+            return createdBy;
+        }
+
+        public void setCreatedBy(String createdBy) {
+            this.createdBy = createdBy;
+        }
+
         public long getCreatedAt() {
             return createdAt;
         }
@@ -143,12 +155,13 @@ public class MongoDBTaskManagementRepository implements TaskManagementRepository
                     && completed == that.completed
                     && Objects.equals(identifier, that.identifier)
                     && Objects.equals(title, that.title)
-                    && Objects.equals(description, that.description);
+                    && Objects.equals(description, that.description)
+                    && Objects.equals(createdBy, that.createdBy);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(identifier, title, description, createdAt, completed);
+            return Objects.hash(identifier, title, description, createdBy, createdAt, completed);
         }
     }
 }

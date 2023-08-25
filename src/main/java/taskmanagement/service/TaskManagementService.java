@@ -7,6 +7,8 @@ import taskmanagement.exceptions.TaskNotFoundException;
 import javax.inject.Inject;
 import java.util.List;
 
+import static taskmanagement.utils.Validator.validateArgNotNull;
+
 public class TaskManagementService {
 
     private static final Logger LOGGER = LogManager.getLogger(TaskManagementService.class);
@@ -18,8 +20,10 @@ public class TaskManagementService {
         this.repository = repository;
     }
 
-    public Task create(String title, String description)  {
-        Task task = Task.builder(title, description).build();
+    public Task create(String title, String description, User creator) {
+        validateArgNotNull(creator, "creator");
+
+        Task task = Task.builder(title, description, creator.getUserID()).build();
 
         repository.save(task);
 

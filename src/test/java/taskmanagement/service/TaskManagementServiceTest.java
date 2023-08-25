@@ -5,6 +5,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
+import taskmanagement.exceptions.InvalidDataException;
 import taskmanagement.exceptions.TaskNotFoundException;
 
 import java.util.ArrayList;
@@ -32,8 +33,9 @@ public class TaskManagementServiceTest {
 
         String title = "test-title";
         String description = "test-description";
+        User creator = new User("test-user-id");
 
-        Task returnedTask = service.create(title, description);
+        Task returnedTask = service.create(title, description, creator);
 
         ArgumentCaptor<Task> taskArgumentCaptor = ArgumentCaptor.forClass(Task.class);
         verify(repository, times(1)).save(taskArgumentCaptor.capture());
@@ -42,8 +44,28 @@ public class TaskManagementServiceTest {
         Task capturedTask = taskArgumentCaptor.getValue();
         assertEquals(title, capturedTask.getTitle());
         assertEquals(description, capturedTask.getDescription());
+        assertEquals(creator.getUserID(), capturedTask.getCreatedBy());
 
         assertEquals(returnedTask, capturedTask);
+    }
+
+    @Test
+    public void testCreateNullCreator() {
+        TaskManagementRepository repository = mock(TaskManagementRepository.class);
+        TaskManagementService service = new TaskManagementService(repository);
+
+        String title = "test-title";
+        String description = "test-description";
+        User creator = null;
+
+        thrown.expect(InvalidDataException.class);
+        thrown.expectMessage("creator cannot be null");
+
+        try {
+            service.create(title, description, creator);
+        } finally {
+            verifyNoMoreInteractions(repository);
+        }
     }
 
     @Test
@@ -51,7 +73,7 @@ public class TaskManagementServiceTest {
         TaskManagementRepository repository = mock(TaskManagementRepository.class);
         TaskManagementService service = new TaskManagementService(repository);
 
-        Task existingTask = Task.builder("test-title", "test-description").build();
+        Task existingTask = Task.builder("test-title", "test-description", "test-user-id").build();
         when(repository.get(anyString())).thenReturn(Optional.of(existingTask));
 
         String newTitle = "new-title";
@@ -59,7 +81,7 @@ public class TaskManagementServiceTest {
         boolean isCompleted = true;
         TaskUpdate update = new TaskUpdate(newTitle, newDescription, isCompleted);
 
-        Task updatedTask = Task.builder(newTitle, newDescription)
+        Task updatedTask = Task.builder(newTitle, newDescription,  existingTask.getCreatedBy())
                 .withIdentifier(existingTask.getIdentifier())
                 .withCreatedAt(existingTask.getCreatedAt())
                 .withCompleted(isCompleted)
@@ -117,8 +139,8 @@ public class TaskManagementServiceTest {
         TaskManagementRepository repository = mock(TaskManagementRepository.class);
         TaskManagementService service = new TaskManagementService(repository);
 
-        Task task = Task.builder("test-title-1", "test-description-1").build();
-        Task anotherTask = Task.builder("test-title-2", "test-description-2").build();
+        Task task = Task.builder("test-title-1", "test-description-1", "test-user-id-1").build();
+        Task anotherTask = Task.builder("test-title-2", "test-description-2", "test-user-id-2").build();
         List<Task> tasks = new ArrayList<>();
         tasks.add(task);
         tasks.add(anotherTask);
@@ -135,7 +157,7 @@ public class TaskManagementServiceTest {
         TaskManagementRepository repository = mock(TaskManagementRepository.class);
         TaskManagementService service = new TaskManagementService(repository);
 
-        Task task = Task.builder("test-title", "test-description").build();
+        Task task = Task.builder("test-title", "test-description", "test-user-id").build();
         when(repository.get(anyString())).thenReturn(Optional.of(task));
 
         Task retrievedTask = service.retrieve(task.getIdentifier());
