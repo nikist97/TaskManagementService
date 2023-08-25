@@ -19,7 +19,7 @@ public class ApplicationConfig extends ResourceConfig {
         register(TaskManagementResource.class);
         register(MetricsResource.class);
         register(JsonObjectMapperProvider.class);
-        register(InvalidTaskDataExceptionMapper.class);
+        register(InvalidDataExceptionMapper.class);
         register(TaskNotFoundExceptionMapper.class);
         register(LoggingFilter.class);
         register(MetricsFilter.class);

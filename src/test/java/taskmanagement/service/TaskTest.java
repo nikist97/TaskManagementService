@@ -3,7 +3,7 @@ package taskmanagement.service;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import taskmanagement.exceptions.InvalidTaskDataException;
+import taskmanagement.exceptions.InvalidDataException;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -122,7 +122,7 @@ public class TaskTest {
         String title = null;
         String description = "test-description";
 
-        thrown.expect(InvalidTaskDataException.class);
+        thrown.expect(InvalidDataException.class);
         thrown.expectMessage("title cannot be null or blank");
 
         Task.builder(title, description).build();
@@ -133,7 +133,7 @@ public class TaskTest {
         String title = "";
         String description = "test-description";
 
-        thrown.expect(InvalidTaskDataException.class);
+        thrown.expect(InvalidDataException.class);
         thrown.expectMessage("title cannot be null or blank");
 
         Task.builder(title, description).build();
@@ -144,7 +144,7 @@ public class TaskTest {
         String title = "   ";
         String description = "test-description";
 
-        thrown.expect(InvalidTaskDataException.class);
+        thrown.expect(InvalidDataException.class);
         thrown.expectMessage("title cannot be null or blank");
 
         Task.builder(title, description).build();
@@ -155,7 +155,7 @@ public class TaskTest {
         String title = "test-title";
         String description = null;
 
-        thrown.expect(InvalidTaskDataException.class);
+        thrown.expect(InvalidDataException.class);
         thrown.expectMessage("description cannot be null or blank");
 
         Task.builder(title, description).build();
@@ -166,7 +166,7 @@ public class TaskTest {
         String title = "test-title";
         String description = "";
 
-        thrown.expect(InvalidTaskDataException.class);
+        thrown.expect(InvalidDataException.class);
         thrown.expectMessage("description cannot be null or blank");
 
         Task.builder(title, description).build();
@@ -177,7 +177,7 @@ public class TaskTest {
         String title = "test-title";
         String description = "   ";
 
-        thrown.expect(InvalidTaskDataException.class);
+        thrown.expect(InvalidDataException.class);
         thrown.expectMessage("description cannot be null or blank");
 
         Task.builder(title, description).build();
@@ -188,7 +188,7 @@ public class TaskTest {
         String title = "test-title";
         String description = "test-description";
 
-        thrown.expect(InvalidTaskDataException.class);
+        thrown.expect(InvalidDataException.class);
         thrown.expectMessage("createdAt cannot be null");
 
         Task.builder(title, description)

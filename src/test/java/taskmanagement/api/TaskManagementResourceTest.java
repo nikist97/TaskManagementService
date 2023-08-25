@@ -4,7 +4,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
-import taskmanagement.exceptions.InvalidTaskDataException;
+import taskmanagement.exceptions.InvalidDataException;
 import taskmanagement.service.Task;
 import taskmanagement.service.TaskManagementService;
 import taskmanagement.service.TaskUpdate;
@@ -57,7 +57,7 @@ public class TaskManagementResourceTest {
         TaskManagementService service = mock(TaskManagementService.class);
         TaskManagementResource resource = new TaskManagementResource(service);
 
-        thrown.expect(InvalidTaskDataException.class);
+        thrown.expect(InvalidDataException.class);
         thrown.expectMessage("task-create-request-body cannot be null");
 
         try {
@@ -121,7 +121,7 @@ public class TaskManagementResourceTest {
         TaskManagementService service = mock(TaskManagementService.class);
         TaskManagementResource resource = new TaskManagementResource(service);
 
-        thrown.expect(InvalidTaskDataException.class);
+        thrown.expect(InvalidDataException.class);
         thrown.expectMessage("task-update-request-body cannot be null");
 
         try {
