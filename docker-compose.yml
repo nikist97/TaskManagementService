@@ -5,6 +5,8 @@ services:
     container_name: taskmanagementservice-mongodb
     volumes:
       - .data/mongo:/data/db
+    networks:
+      - intranet
   prometheus:
     image: "prom/prometheus:v2.40.7"
     container_name: taskmanagementservice-prometheus
@@ -13,12 +15,69 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
+    networks:
+      - intranet
   webapp:
     build: .
     container_name: taskmanagementservice-api
     depends_on:
       - "mongo"
+      - "kratos"
     environment:
       - MongoDB_URI=mongodb://taskmanagementservice-mongodb:27017
     ports:
       - "8080:8080"
+    networks:
+      - intranet
+  kratos:
+    image: oryd/kratos:v1.0.0
+    container_name: taskmanagementservice-kratos
+    depends_on:
+      - kratos-migrate
+      - mailslurper
+    ports:
+      - "4433:4433"
+      - "4434:4434"
+    environment:
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
+      - LOG_LEVEL=trace
+    command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
+    volumes:
+      - .data/kratos:/var/lib/sqlite/
+      - ./kratos.yml:/etc/config/kratos/kratos.yml
+      - ./user.schema.json:/etc/config/kratos/user.schema.json
+    networks:
+      - intranet
+  kratos-migrate:
+    image: oryd/kratos:v1.0.0
+    container_name: taskmanagementservice-kratos-migrate
+    environment:
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
+    command: -c /etc/config/kratos/kratos.yml migrate sql -e --yes
+    volumes:
+      - .data/kratos:/var/lib/sqlite/
+      - ./kratos.yml:/etc/config/kratos/kratos.yml
+      - ./user.schema.json:/etc/config/kratos/user.schema.json
+    networks:
+      - intranet
+  kratos-selfservice-ui-node:
+    image: oryd/kratos-selfservice-ui-node:v1.0.0
+    container_name: taskmanagementservice-kratos-selfservice-ui-node
+    ports:
+      - "4455:4455"
+    environment:
+      - KRATOS_PUBLIC_URL=http://taskmanagementservice-kratos:4433/
+      - KRATOS_BROWSER_URL=http://127.0.0.1:4433/
+      - PORT=4455
+    networks:
+      - intranet
+  mailslurper:
+    image: oryd/mailslurper:latest-smtps
+    container_name: taskmanagementservice-mailslurper
+    ports:
+      - "4436:4436"
+      - "4437:4437"
+    networks:
+      - intranet
+networks:
+  intranet:
