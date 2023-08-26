@@ -88,6 +88,12 @@
             <artifactId>mongodb-driver-sync</artifactId>
             <version>4.6.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>sh.ory.kratos</groupId>
+            <artifactId>kratos-client</artifactId>
+            <version>0.13.1</version>
+        </dependency>
     </dependencies>
 
     <build>

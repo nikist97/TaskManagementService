@@ -8,10 +8,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import taskmanagement.exceptions.AuthenticationException;
 import taskmanagement.service.User;
+import taskmanagement.service.UserManagementService;
 
 import javax.ws.rs.container.ContainerRequestContext;
+import java.io.IOException;
+import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -25,33 +28,39 @@ public class AuthenticationFilterTest {
     @Mock
     private ContainerRequestContext requestContext;
 
+    @Mock
+    private UserManagementService userManagementService;
+
     @Test
-    public void testRequestFilter() {
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter();
+    public void testRequestFilter() throws IOException {
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter(userManagementService);
         String authToken = "token";
+        User user = new User("test-user-id");
 
-        when(requestContext.getHeaderString("Authorization")).thenReturn("Bearer " + authToken);
-
-        authenticationFilter.filter(requestContext);
-
-        verify(requestContext).getHeaderString("Authorization");
-        verify(requestContext).setProperty(eq("user"), eq(new User(authToken)));
-        verifyNoMoreInteractions(requestContext);
-    }
-
-    @Test
-    public void testRequestFilterNullAuthHeader() {
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter();
+        when(requestContext.getHeaderString(anyString())).thenReturn("Bearer " + authToken);
+        when(userManagementService.getUserByAuthToken(anyString())).thenReturn(Optional.of(user));
 
         authenticationFilter.filter(requestContext);
 
         verify(requestContext).getHeaderString("Authorization");
-        verifyNoMoreInteractions(requestContext);
+        verify(requestContext).setProperty("user", user);
+        verify(userManagementService).getUserByAuthToken(authToken);
+        verifyNoMoreInteractions(requestContext, userManagementService);
     }
 
     @Test
-    public void testRequestFilterNonBearerAuthHeader() {
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter();
+    public void testRequestFilterNullAuthHeader() throws IOException {
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter(userManagementService);
+
+        authenticationFilter.filter(requestContext);
+
+        verify(requestContext).getHeaderString("Authorization");
+        verifyNoMoreInteractions(requestContext, userManagementService);
+    }
+
+    @Test
+    public void testRequestFilterNonBearerAuthHeader() throws IOException {
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter(userManagementService);
 
         when(requestContext.getHeaderString("Authorization")).thenReturn("Basic test123");
 
@@ -62,7 +71,7 @@ public class AuthenticationFilterTest {
             authenticationFilter.filter(requestContext);
         } finally {
             verify(requestContext).getHeaderString("Authorization");
-            verifyNoMoreInteractions(requestContext);
+            verifyNoMoreInteractions(requestContext, userManagementService);
         }
     }
 }

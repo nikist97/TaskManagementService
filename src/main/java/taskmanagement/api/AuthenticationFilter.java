@@ -2,19 +2,30 @@ package taskmanagement.api;
 
 import taskmanagement.exceptions.AuthenticationException;
 import taskmanagement.service.User;
+import taskmanagement.service.UserManagementService;
 
 import javax.annotation.Priority;
+import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.ext.Provider;
+import java.io.IOException;
+import java.util.Optional;
 
 
 @Priority(3)
 @Provider
 public class AuthenticationFilter implements ContainerRequestFilter {
 
+    private final UserManagementService userManagementService;
+
+    @Inject
+    public AuthenticationFilter(UserManagementService userManagementService) {
+        this.userManagementService = userManagementService;
+    }
+
     @Override
-    public void filter(ContainerRequestContext requestContext) {
+    public void filter(ContainerRequestContext requestContext) throws IOException {
         String authHeader = requestContext.getHeaderString("Authorization");
         if (authHeader == null) {
             return;
@@ -26,12 +37,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         }
 
         String authToken = authHeader.replaceFirst("Bearer", "").trim();
-        User user = getUserByAuthToken(authToken);
-        requestContext.setProperty("user", user);
-    }
-
-    private User getUserByAuthToken(String authToken) {
-        // FIXME for now use the auth token as user ID until integration with user service API is implemented
-        return new User(authToken);
+        Optional<User> user = userManagementService.getUserByAuthToken(authToken);
+        user.ifPresent(u -> requestContext.setProperty("user", u));
     }
 }

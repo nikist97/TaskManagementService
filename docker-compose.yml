@@ -25,6 +25,7 @@ services:
       - "kratos"
     environment:
       - MongoDB_URI=mongodb://taskmanagementservice-mongodb:27017
+      - Kratos_Base_Path=http://taskmanagementservice-kratos:4433
     ports:
       - "8080:8080"
     networks:
